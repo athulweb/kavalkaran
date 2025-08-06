@@ -1,0 +1,46 @@
+[
+  {
+    "question": "ഒരു ഫോൺ ഹാക്ക് ചെയ്യപ്പെട്ടു എന്ന് എങ്ങനെ അറിയാം?",
+    "answer": "ഫോൺ ചൂടാകുന്നത്, ആപ്പുകൾ സ്വയം തുറക്കുന്നത്, ഡാറ്റ ഉപയോഗം അനിയന്ത്രിതം എന്നിവ ലക്ഷണങ്ങളാകാം. Settings → App Usage → Battery → Background Apps പരിശോധിക്കുക."
+  },
+  {
+    "question": "ബാങ്ക് തട്ടിപ്പിൽ നിന്ന് എങ്ങനെ രക്ഷപ്പെടാം?",
+    "answer": "അജ്ഞാത കോളുകൾ, SMS, ലിങ്കുകൾ വഴി ബാങ്ക് വിവരങ്ങൾ നൽകരുത്. ബാങ്ക് ആരോടും OTP ചോദിക്കില്ല. UPI PIN അജ്ഞാതനോട് പറയരുത്."
+  },
+  {
+    "question": "ഫോണിൽ ആഡ് വന്നാൽ അത് വൈറസ് ആണോ?",
+    "answer": "Pop-up ആഡുകൾ ഏത് ആപ്പിലൂടെയാണ് വരുന്നത് എന്ന് പരിശോധിക്കുക. Uninstall shady apps. Play Store review കാണുക."
+  },
+  {
+    "question": "USB ഡ്രൈവ് വഴി വൈറസ് വരുമോ?",
+    "answer": "അതെ. പ്രത്യേകിച്ച് autorun-enabled USB. USB ഡാറ്റ access ചെയ്യുന്നതിന് മുമ്പ് എന്റി-വൈറസ് ഉപയോഗിച്ച് സ്കാൻ ചെയ്യണം."
+  },
+  {
+    "question": "പാസ്വേഡ് മാനേജർ സുരക്ഷിതമാണോ?",
+    "answer": "അതെ, പക്ഷേ विश्वासിച്ച പാസ്വേഡ് മാനേജർ മാത്രം ഉപയോഗിക്കണം. Bitwarden, 1Password, KeePass തുടങ്ങിയവ നല്ലതാണ്."
+  },
+  {
+    "question": "ഫോണിൽ screen overlay എങ്ങനെ അപകടകരമാണ്?",
+    "answer": "Malicious apps permission pyshing ചെയ്യാൻ screen overlay ഉപയോഗിക്കുന്നു. Settings → Apps → Special Access → Overlay permissions പരിശോധിക്കുക."
+  },
+  {
+    "question": "മൊബൈൽ ഹാക്ക് ആകുമ്പോൾ ഒന്നാമത്തെ ചെയ്യേണ്ടത്?",
+    "answer": "Flight Mode ഓണാക്കുക. Settings → Installed Apps → Check Suspicious → Uninstall. പിന്നെ ഒരു trusted antivirus ഉപയോഗിച്ച് full scan ചെയ്യുക."
+  },
+  {
+    "question": "VPN ഉപയോഗിക്കുന്നത് സുരക്ഷിതമാണോ?",
+    "answer": "നല്ല VPN (ProtonVPN, Mullvad, Surfshark) ഉപയോഗിക്കുന്നതുമാത്രമേ സുരക്ഷിതമാകൂ. Free VPN പലപ്പോഴും Tracking & Logging ചെയ്യുന്നു."
+  },
+  {
+    "question": "Dark Web എന്താണ്? അതിൽ പോകരുതെന്ന് പറയുന്നത് എന്തുകൊണ്ട്?",
+    "answer": "Dark Web TOR ബ്രൗസറിൽ പ്രവർത്തിക്കുന്നു. അതിലൂടെ ചാരവിവരം, ഹാക്ക് ഡാറ്റ, ലെഗൽ അല്ലാത്ത സാധനങ്ങൾ ലഭ്യമാണ്. പലതും നിരീക്ഷണത്തിലാണ്."
+  },
+  {
+    "question": "മോശമായ വെബ്സൈറ്റുകൾ ക്ലിക്കുചെയ്താൽ എന്താണ് സംഭവിക്കുന്നത്?",
+    "answer": "പക്ഷേ ചിലത് auto-download, credential stealing, session hijacking പോലുള്ള ആക്രമണങ്ങൾ നടത്തും. നിബന്ധനകൾ ഇല്ലാത്ത വെബ്സൈറ്റുകൾ തുറക്കരുത്."
+  },
+  {
+    "question": "QR കോഡുകൾ വഴി ഹാക്ക് ചെയ്യാമോ?",
+    "answer": "അതെ. QR Code malicious link കാണിച്ചേക്കാം. HTML Attack / XSS വഴി browser hijack ചെയ്യാം. QR before scan → verify URL."
+  }
+]
