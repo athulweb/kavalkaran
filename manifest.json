@@ -1,0 +1,23 @@
+{
+  "name": "കാവൽക്കാരൻ",
+  "author" : "Athul vinod .M",
+  "short_name": "Kaval",
+  "description": "നിങ്ങളുടെ സ്വകാര്യ ഡിജിറ്റൽ രക്ഷാകവചം",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#1f2937",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

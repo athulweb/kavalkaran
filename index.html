@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+  <meta charset="UTF-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+ <meta name="author" content="Athul vinod"/>
+  <title>കാവൽക്കാരൻ</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="shortcut icon" href="icon/favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans Malayalam', sans-serif;
+      background: url('images/bg.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+    }
+
+    .welcome-box {
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 1rem;
+      border-radius: 1rem;
+      max-width: 600px;
+      margin: 15vh auto;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1.3rem;
+    }
+
+    .round-icon {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #10b981;
+  margin-bottom: 1rem;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+}
+
+  </style>
+</head>
+<body>
+  <div class="welcome-box">
+<img src="images/logo.png" alt="കാവൽക്കാരൻ ലോഗോ" class="round-icon" />
+    <h1>കാവൽക്കാരൻ</h1>
+    <p style="color: black;">അല്പം സൈബർ ശരണം.....</p>
+  
+     <br/>
+    <button onclick="startApp()" style="padding: 1rem 2rem; font-size: 1.2rem;">ആരംഭിക്കുക</button>
+  </div>
+
+  <noscript>
+    This application made up of java script, but we are focused on privacy as the important
+    thing hence we are not using a database or server our own, or no cookies  you can view 
+    page  source for conformation but cloning this website is fully illegal and have fine 
+    more than 1 crore according to indian it act 2000. if you are in another countries so that 
+    will also problem under there it acts or cyber security laws
+  </noscript>
+
+
+<center>
+<div id="pwa-install-container">
+  <button id="add-to-home-button" style="display: none;">
+    🚀 Install App
+  </button>
+</div>
+</center>
+
+  <footer style="color: black;"> creeated By Athul vinod .M</footer>
+  <script>
+    function startApp() {
+      window.location.href = "dashboard.html";
+    }
+  </script>
+
+<center>
+<div id="pwa-install-container">
+  <button id="add-home" >
+    🚀 Install App
+  </button>
+</div>
+</center>
+<style>
+  #add-to-home-button {
+    padding: 1em 2em;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    background: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet);
+    background-size: 1400% 1400%;
+    animation: rainbowMove 8s linear infinite, pulse 2s ease-in-out infinite;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  #add-to-home-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+  }
+
+  @keyframes rainbowMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+</style>
+
+<script>
+  let deferredPrompt;
+
+  // Listen for the beforeinstallprompt event
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent the automatic prompt
+    e.preventDefault();
+    // Save the event so it can be triggered later
+    deferredPrompt = e;
+
+    // Show the button
+    document.getElementById('add-home').style.display = 'block';
+  });
+
+  // Handle the button click
+  document.getElementById('add-home').addEventListener('click', async () => {
+    if (deferredPrompt) {
+      // Show the install prompt
+      deferredPrompt.prompt();
+
+      // Wait for user response
+      const { outcome } = await deferredPrompt.userChoice;
+
+      console.log(`User response: ${outcome}`);
+
+      // Clear the saved event
+      deferredPrompt = null;
+    }
+  });
+</script>
+
+
+</body>
+</html>

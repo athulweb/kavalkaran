@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+ <link rel="manifest" href="manifest.json">
+  <title>കാവൽക്കാരൻ Dialer</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Noto Sans Malayalam', sans-serif;
+      background: #1a1a1a;
+      color: white;
+      text-align: center;
+    }
+
+    header {
+      background: #ff1a1a;
+      padding: 20px;
+      font-size: 24px;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .btn {
+      display: block;
+      margin: 15px auto;
+      padding: 20px 30px;
+      font-size: 20px;
+      background: #ff3333;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+      transition: 0.2s ease;
+    }
+
+    .btn:hover {
+      background: #e60000;
+    }
+
+    footer {
+      font-size: 14px;
+      margin-top: 40px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <header>🚨 കാവൽക്കാരൻ - Safety Dialer</header>
+
+  <div class="container">
+    <button class="btn" onclick="dial('100')">👮🏼‍♀️ പോലീസ് സഹായം (100)</button>
+    <button class="btn" onclick="dial('112')">📞 എമർജൻസി നമ്പർ (112)</button>
+    <button class="btn" onclick="dial('101')">🔥 ഫയർ ഫോഴ്‌സ് (101)</button>
+    <button class="btn" onclick="dial('102')">🚑 ആംബുലൻസ് (102)</button>
+    <button class="btn" onclick="dial('1091')">👩 വനിതാ ഹെൽപ്പ്‌ലൈൻ (1091)</button>
+    <button class="btn" onclick="dial('1930')">🛡️ സൈബർ ക്രൈം റിപ്പോർട്ട് (1930)</button>
+    <button class="btn" onclick="dial('1098')">🧒🏻 ബാല സംരക്ഷണം (1098)</button>
+  </div>
+
+  <footer>Developed by Athul | Kavalkaran 🔐</footer>
+
+  <script>
+    function dial(number) {
+      window.location.href = 'tel:' + number;
+    }
+  </script>
+</body>
+</html>

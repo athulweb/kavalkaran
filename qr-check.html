@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+  <meta charset="UTF-8">
+  <title>QR കോഡ് പരിശോധകൻ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    body {
+      background: #0f172a;
+      color: white;
+      font-family: 'Noto Sans Malayalam', sans-serif;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+    #reader {
+      width: 100%;
+      max-width: 400px;
+      margin: auto;
+    }
+    #result {
+      background: #1e293b;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+      word-wrap: break-word;
+    }
+    input[type="file"] {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    iframe {
+      margin-top: 15px;
+      border: 2px solid #334155;
+      border-radius: 10px;
+    }
+    .safe { color: #10b981; }
+    .danger { color: #ef4444; }
+    .warning { color: #facc15; }
+    .qr-type-box {
+      background: #334155;
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 10px;
+      font-size: 1.2em;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <h1>QR കോഡ് പരിശോധകൻ</h1>
+
+  <div id="reader"></div>
+
+  <input type="file" accept="image/*" id="file-input">
+  
+  <div id="result">QR വിവരങ്ങൾ ഇവിടെ കാണും...</div>
+  <div id="preview"></div>
+
+  <script>
+    const resultEl = document.getElementById("result");
+    const previewEl = document.getElementById("preview");
+
+    function analyzeData(data) {
+      const lower = data.toLowerCase();
+
+      let type = "അജ്ഞാതം";
+      if (lower.startsWith("http://") || lower.startsWith("https://")) {
+        type = "🌐 ലിങ്ക്";
+      } else if (lower.startsWith("upi://")) {
+        type = "💸 പേയ്‌മെന്റ് QR";
+      } else if (lower.endsWith(".pdf") || lower.endsWith(".docx") || lower.endsWith(".zip") || lower.endsWith(".apk") || lower.endsWith(".exe")) {
+        type = "📁 ഫയൽ ഡൗൺലോഡ്";
+      } else if (lower.startsWith("mailto:")) {
+        type = "📧 ഇമെയിൽ ലിങ്ക്";
+      } else if (lower.startsWith("tel:")) {
+        type = "📞 ഫോൺ നമ്പർ";
+      } else {
+        type = "📝 സാധാരണ ടെക്സ്റ്റ്";
+      }
+
+      let warning = "";
+      if (lower.includes('bit.ly') || lower.includes('tinyurl') || lower.includes('redirect')) {
+        warning = '<p class="warning">⚠️ ചുരുക്കിയ ലിങ്ക് – ശ്രദ്ധിക്കണം.</p>';
+      } else if (lower.match(/\.exe|\.apk|\.bat/)) {
+        warning = '<p class="danger">🛑 അപകടകരമായ ഫയൽ ലിങ്ക്!</p>';
+      } else if (lower.startsWith('http://') || lower.startsWith('https://')) {
+        warning = '<p class="safe">🔗 സാധാരണ ലിങ്ക് – സന്ദർശിക്കുമ്പോൾ ജാഗ്രത പാലിക്കുക.</p>';
+      } else {
+        warning = '<p class="safe">✅ സാധാരണ ഡാറ്റ.</p>';
+      }
+
+      return `<div class="qr-type-box"><strong>QR കോഡ് തരം:</strong> ${type}</div>${warning}`;
+    }
+
+    function showResult(decodedText) {
+      resultEl.innerHTML = `<strong>QR കണ്ടെത്തിയത്:</strong><br>${decodedText}<br>${analyzeData(decodedText)}`;
+      
+      if (decodedText.startsWith('http://') || decodedText.startsWith('https://')) {
+        previewEl.innerHTML = `
+          <h3>🌐 വെബ്സൈറ്റ് പ്രിവ്യൂ:</h3>
+          <iframe src="${decodedText}" 
+                  width="100%" 
+                  height="400" 
+                  sandbox="allow-same-origin allow-forms allow-popups">
+          </iframe>`;
+      } else {
+        previewEl.innerHTML = '';
+      }
+    }
+
+    // Start QR Scanner from Camera
+    const html5QrCode = new Html5Qrcode("reader");
+    Html5Qrcode.getCameras().then(cameras => {
+      if (cameras && cameras.length) {
+        html5QrCode.start(
+          { facingMode: "environment" }, 
+          { fps: 10, qrbox: 250 },
+          decodedText => {
+            html5QrCode.stop();
+            showResult(decodedText);
+          }
+        ).catch(err => {
+          resultEl.innerHTML = `<p class="danger">😢 ക്യാമറ പ്രവർത്തിക്കുന്നില്ല</p>`;
+        });
+      }
+    });
+
+    // File Upload Scanner
+    document.getElementById("file-input").addEventListener("change", async e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        html5QrCode.scanFile(file, true)
+          .then(decodedText => showResult(decodedText))
+          .catch(err => resultEl.innerHTML = `<span class="danger">⚠️ സ്കാൻ ചെയ്യാനായില്ല: QR കണ്ടെത്തിയില്ല</span>`);
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+</body>
+</html>

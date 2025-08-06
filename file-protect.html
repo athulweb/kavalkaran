@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+  <meta charset="UTF-8">
+  <title>സുരക്ഷിത ഫയൽ വാൾട്ട്</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <style>
+    body { font-family: sans-serif; background: #111; color: #eee; padding: 2rem; }
+    h1 { text-align: center; color: #0f0; }
+    input, button { margin: 0.5rem 0; padding: 0.5rem; font-size: 1rem; }
+    ul { list-style: none; padding: 0; }
+    li { background: #222; margin: 0.3rem 0; padding: 0.5rem; border: 1px solid #555; }
+    a { color: #0af; }
+  </style>
+</head>
+<body>
+  <h1>🔒 സുരക്ഷിത ഫയൽ വാൾട്ട്</h1>
+
+  <input type="file" id="fileInput" />
+  <input type="password" id="passwordInput" placeholder="പാസ്‌വേഡ് നൽകുക" />
+  <button onclick="encryptAndStore()">സുരക്ഷിതമായി അപ്‌ലോഡ് ചെയ്യുക</button>
+  <button onclick="tryFingerprint()">ഫിംഗർപ്രിന്റ് ഉപയോഗിക്കുക</button>
+
+  <h2>📁 സംഭരിച്ച ഫയലുകൾ</h2>
+  <ul id="fileList"></ul>
+
+  <script>
+    const dbName = "secureVault";
+    const storeName = "files";
+    let db;
+
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+
+    const request = indexedDB.open(dbName, 1);
+    request.onupgradeneeded = event => {
+      db = event.target.result;
+      db.createObjectStore(storeName, { keyPath: "id" });
+    };
+    request.onsuccess = event => {
+      db = event.target.result;
+      listFiles();
+    };
+
+    async function sha256(message) {
+      const data = encoder.encode(message);
+      const hash = await crypto.subtle.digest("SHA-256", data);
+      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    async function encryptData(password, data) {
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const keyMaterial = await crypto.subtle.importKey("raw", encoder.encode(password), { name: "PBKDF2" }, false, ["deriveKey"]);
+      const key = await crypto.subtle.deriveKey(
+        { name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" },
+        keyMaterial,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt"]
+      );
+      const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, data);
+      return { encrypted, iv, salt };
+    }
+
+    async function decryptData(password, encrypted, iv, salt) {
+      const keyMaterial = await crypto.subtle.importKey("raw", encoder.encode(password), { name: "PBKDF2" }, false, ["deriveKey"]);
+      const key = await crypto.subtle.deriveKey(
+        { name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" },
+        keyMaterial,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["decrypt"]
+      );
+      return await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, encrypted);
+    }
+
+    async function encryptAndStore() {
+      const file = fileInput.files[0];
+      const password = passwordInput.value;
+      if (!file || !password) return alert("ഒരു ഫയലും പാസ്‌വേഡും നൽകുക.");
+
+      const arrayBuffer = await file.arrayBuffer();
+      const { encrypted, iv, salt } = await encryptData(password, arrayBuffer);
+      const nameHash = await sha256(file.name + password);
+      const fileRecord = {
+        id: Date.now().toString(),
+        name: btoa(nameHash),
+        encrypted,
+        iv: Array.from(iv),
+        salt: Array.from(salt),
+        originalName: file.name
+      };
+      const tx = db.transaction([storeName], "readwrite");
+      tx.objectStore(storeName).add(fileRecord).onsuccess = () => {
+        alert("✅ ഫയൽ സുരക്ഷിതമായി സംഭരിച്ചു!");
+        listFiles();
+      };
+    }
+
+    function listFiles() {
+      const ul = document.getElementById("fileList");
+      ul.innerHTML = "";
+      const tx = db.transaction([storeName], "readonly");
+      tx.objectStore(storeName).getAll().onsuccess = event => {
+        event.target.result.forEach(file => {
+          const li = document.createElement("li");
+
+          const decryptBtn = document.createElement("button");
+          decryptBtn.textContent = "🔓 തുറക്കുക....";
+          decryptBtn.onclick = () => decryptFile(file);
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.textContent = "🗑️ ഫയൽ ഡിലീറ്റ് ചെയ്യുക";
+          deleteBtn.style.marginLeft = "1rem";
+          deleteBtn.onclick = () => deleteFile(file);
+
+          li.innerHTML = `<br/><strong>യഥാർത്ഥം:</strong> ${file.originalName} `;
+          li.appendChild(decryptBtn);
+          li.appendChild(deleteBtn);
+          ul.appendChild(li);
+        });
+      };
+    }
+
+    async function decryptFile(file) {
+      const password = prompt("ഡീക്രിപ്റ്റ് ചെയ്യാൻ പാസ്‌വേഡ് നൽകുക:");
+      if (!password) return;
+
+      try {
+        const encryptedData = file.encrypted instanceof ArrayBuffer
+          ? file.encrypted
+          : new Uint8Array(Object.values(file.encrypted)).buffer;
+
+        const decrypted = await decryptData(
+          password,
+          encryptedData,
+          new Uint8Array(file.iv),
+          new Uint8Array(file.salt)
+        );
+
+        const blob = new Blob([decrypted]);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = file.originalName;
+        a.click();
+      } catch (e) {
+        alert("❌ തെറ്റായ പാസ്‌വേഡ് അല്ലെങ്കിൽ ഡീക്രിപ്ഷൻ പരാജയപ്പെട്ടു.");
+        console.error(e);
+      }
+    }
+
+    async function deleteFile(file) {
+      const password = prompt("ഫയൽ മായ്ക്കാൻ പാസ്‌വേഡ് നൽകുക:");
+      if (!password) return;
+
+      try {
+        const encryptedData = file.encrypted instanceof ArrayBuffer
+          ? file.encrypted
+          : new Uint8Array(Object.values(file.encrypted)).buffer;
+
+        await decryptData(password, encryptedData, new Uint8Array(file.iv), new Uint8Array(file.salt));
+        const tx = db.transaction([storeName], "readwrite");
+        tx.objectStore(storeName).delete(file.id).onsuccess = () => {
+          alert("🗑️ ഫയൽ വിജയകരമായി ഡിലീറ്റ് ചെയ്തു!");
+          listFiles();
+        };
+      } catch (e) {
+        alert("❌ തെറ്റായ പാസ്‌വേഡ്! ഫയൽ ഡിലീറ്റ് ചെയ്യാൻ കഴിയില്ല.");
+      }
+    }
+
+    function tryFingerprint() {
+      alert("🤚 ഫിംഗർപ്രിന്റ് പിന്തുണ ഇപ്പോൾ ലഭ്യമല്ല. WebAuthn API ഉപയോഗിച്ച് ഇത് ചേർക്കാം!");
+    }
+  </script>
+</body>
+</html>
