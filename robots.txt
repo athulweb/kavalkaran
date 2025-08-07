@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://athulweb.github.io/kavalkaran/sitemap.xml
