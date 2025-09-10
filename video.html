@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>കാവൽക്കാരൻ 🎥</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans Malayalam', sans-serif;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 0;
+      direction: rtl;
+      color: #333;
+      overflow: hidden;
+    }
+
+    .fullscreen-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000000cc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      color: white;
+      flex-direction: column;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .fullscreen-overlay button {
+      font-size: 18px;
+      padding: 15px 30px;
+      background-color: #1e90ff;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .qa-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 20px;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .qa-block {
+      background: #ffffff;
+      margin-bottom: 20px;
+      padding: 20px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .question {
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      color: #1e90ff;
+    }
+
+    .question:hover {
+      color: #0056b3;
+    }
+
+    .embed-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      max-width: 100%;
+      margin-top: 15px;
+      border-radius: 10px;
+    }
+
+    .embed-container > div,
+    .embed-container > iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .question {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fullscreen prompt -->
+  <div id="fullscreenPrompt" class="fullscreen-overlay">
+    <h2>▶️ തുടക്കം തുടങ്ങാൻ ടാപ്പ് ചെയ്യൂ</h2>
+    <button onclick="enterApp()">Enter Fullscreen</button>
+  </div>
+
+  <!-- Main Q&A area -->
+  <div id="qaContent" class="qa-wrapper" style="display:none;">
+
+    <!-- Q1 -->
+    <div class="qa-block">
+      <div class="question" onclick="playVideo('vid1')">❓ എന്താണ് കാവൽക്കാരൻ?</div>
+      <div class="embed-container" id="vid1-cont" style="display:none;">
+        <div id="player-vid1"></div>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="qa-block">
+      <div class="question" onclick="playVideo('vid2')">❓ എങ്ങനെ വെബ്സൈറ്റ് സുരക്ഷിതമാക്കാം?</div>
+      <div class="embed-container" id="vid2-cont" style="display:none;">
+        <div id="player-vid2"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://www.youtube.com/iframe_api"></script>
+
+  <script>
+    var players = {};
+
+    function enterApp() {
+      const elem = document.documentElement;
+
+      // Try to enter fullscreen
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen(); // Safari
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen(); // IE11
+      }
+
+      // Hide overlay
+      document.getElementById('fullscreenPrompt').style.display = 'none';
+
+      // Show main Q&A section
+      document.getElementById('qaContent').style.display = 'flex';
+    }
+
+    function playVideo(videoId) {
+      // Pause and hide all other containers
+      document.querySelectorAll('.embed-container').forEach(cont => {
+        if (cont.id !== videoId + '-cont') {
+          cont.style.display = 'none';
+          const playerId = cont.querySelector('div').id;
+          if (players[playerId]) {
+            players[playerId].pauseVideo();
+          }
+        }
+      });
+
+      // Show selected container
+      const cont = document.getElementById(videoId + '-cont');
+      cont.style.display = 'block';
+
+      const playerId = 'player-' + videoId;
+      let ytVideoId;
+      if (videoId === 'vid1') {
+        ytVideoId = 'khq5dZDkjV4';
+      } else if (videoId === 'vid2') {
+        ytVideoId = 'laJKZq-B3Cc';
+      }
+
+      if (!players[playerId]) {
+        players[playerId] = new YT.Player(playerId, {
+          width: '100%',
+          height: '100%',
+          videoId: ytVideoId,
+          playerVars: {
+            'autoplay': 1,
+            'playsinline': 1,
+            'rel': 0
+          },
+          events: {
+            'onReady': function(event) {
+              event.target.playVideo();
+              enterFullscreen(event.target.getIframe());
+            }
+          }
+        });
+      } else {
+        players[playerId].playVideo();
+        enterFullscreen(players[playerId].getIframe());
+      }
+    }
+
+    function enterFullscreen(elem) {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      }
+    }
+  </script>
+
+</body>
+</html>
