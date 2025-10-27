@@ -1,165 +1,280 @@
+
 <!DOCTYPE html>
 <html lang="ml">
 <head>
-  <meta charset="UTF-8">
-  <title>🔐 കാവൽ – സൈബർ ലിങ്ക് സംരക്ഷകൻ</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🔐 കാവൽ++ – ലിങ്ക് സുരക്ഷാ പരിശോധന</title>
   <link rel="manifest" href="manifest.json">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam&display=swap" rel="stylesheet" />
   <style>
-    body {
-      background:#0f172a;
-      color:#f1f5f9;
-      font-family:'Noto Sans Malayalam', 'Segoe UI', sans-serif;
-      padding:20px;
-      text-align:center;
-    }
-    h1 { color:#00ffae; font-size:2rem; }
-    input, button {
-      padding:12px;
-      margin:10px;
-      font-size:1rem;
-      border:none;
-      border-radius:8px;
-      width:80%;
-      max-width:500px;
-    }
-    input { background:#334155; color:#f8fafc; }
-    button {
-      background:#00ffae;
-      color:#0f172a;
-      cursor:pointer;
-    }
-    #report {
-      text-align:left;
-      background:#1e293b;
-      padding:20px;
-      border-radius:10px;
-      margin-top:20px;
-    }
-    .safe { color:#00ff7f; }
-    .danger { color:#ff4f4f; }
-    .warn { color:#ffdf00; }
-    img { max-width:100%; border-radius:6px; margin-top:10px; }
-    pre { white-space:pre-wrap; word-wrap:break-word; }
+body {
+  background: #0f172a;
+  color: #f1f5f9;
+  font-family: 'Noto Sans Malayalam', 'Segoe UI', sans-serif;
+  padding: 20px;
+  text-align: center;
+}
+
+h1 {
+  color: #00ffae;
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+input,
+button {
+  padding: 12px;
+  margin: 10px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 500px;
+  transition: all 0.3s ease;
+}
+
+input {
+  background: #334155;
+  color: #f8fafc;
+}
+input:focus {
+  outline: 2px solid #00ffae;
+}
+
+button {
+  background: #00ffae;
+  color: #0f172a;
+  cursor: pointer;
+}
+button:hover {
+  background: #5effc3;
+}
+
+#report {
+  text-align: left;
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 20px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.safe {
+  color: #00ff7f;
+}
+.danger {
+  color: #ff4f4f;
+}
+.warn {
+  color: #ffdf00;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+#loader {
+  color: #ffdf00;
+  font-weight: bold;
+  margin-top: 15px;
+}
+
   </style>
 </head>
+
 <body>
   <h1>🌐 കാവൽ++</h1>
-  <p>ചോദ്യം ചെയ്യേണ്ട ലിങ്ക് നൽകൂ:</p>
-  <input id="urlInput" placeholder="ഉദാഹരണം: https://bit.ly/xyz">
-  <button onclick="checkURL()">പരിശോധിക്കുക</button>
+  <p>പരിശോധിക്കേണ്ട ലിങ്ക് നൽകൂ:</p>
+
+  <div class="input-container">
+    <input id="urlInput" placeholder="ഉദാഹരണം: https://bit.ly/xyz" aria-label="പരിശോധിക്കേണ്ട URL" />
+    <button id="checkBtn">പരിശോധിക്കുക</button>
+  </div>
+
+  <div id="loader" hidden>⏳ പരിശോധിക്കുന്നു...</div>
   <div id="report"></div>
 
-  <script>
-    async function checkURL() {
-      const url = document.getElementById('urlInput').value.trim();
-      const output = document.getElementById('report');
-      output.innerHTML = "";
+<script>
 
-      if (!url.startsWith("http")) {
-        output.innerHTML = "<p class='warn'>⚠️ ദയവായി പൂർണ്ണമായ https:// ലിങ്ക് നൽകൂ.</p>";
-        return;
-      }
+document.getElementById('checkBtn').addEventListener('click', checkURL);
 
-      const domain = (new URL(url)).hostname;
-      let result = [];
+async function checkURL() {
+  const urlField = document.getElementById('urlInput');
+  const report = document.getElementById('report');
+  const loader = document.getElementById('loader');
+  const url = urlField.value.trim();
 
-      output.innerHTML += `<p>🌐 URL: <code>${url}</code></p>`;
+  report.innerHTML = '';
+  loader.hidden = false;
 
-      // ✅ Real SSL Check using HEAD request to https://domain
-      output.innerHTML += `<p>🔒 SSL സപ്പോർട്ട്: <span id="sslStatus">പരിശോധിക്കുന്നു...</span></p>`;
-      try {
-        const testSSL = await fetch("https://" + domain, { method: "HEAD" });
-        if (testSSL.ok) {
-          document.getElementById("sslStatus").innerHTML = '<span class="safe">ഉണ്ട്</span>';
-        } else {
-          document.getElementById("sslStatus").innerHTML = '<span class="warn">സെർവർ പ്രതികരിച്ചില്ല</span>';
-        }
-      } catch {
-        document.getElementById("sslStatus").innerHTML = '<span class="danger">ഇല്ല</span>';
-      }
+  if (!isValidURL(url)) {
+    showError("⚠️ ദയവായി സാധുവായ https:// ലിങ്ക് നൽകൂ.", "warn", report, loader);
+    return;
+  }
 
-      // WHOIS
-      output.innerHTML += `<p>🌍 WHOIS പരിശോധിക്കുന്നു...</p>`;
-      try {
-        const res = await fetch(`https://api.whois.vu/?q=${domain}`);
-        const text = await res.text();
-        output.innerHTML += `<p>WHOIS ഫലങ്ങൾ: ${text.includes("Domain Name") ? '<span class="safe">കണ്ടെത്തിയിട്ടുണ്ട്</span>' : '<span class="warn">കണ്ടെത്തിയില്ല</span>'}</p>`;
-      } catch {
-        output.innerHTML += `<p class="warn">⚠️ WHOIS കണക്കുകൾ ലഭിച്ചില്ല.</p>`;
-      }
+  const domain = new URL(url).hostname;
+  appendLine(report, `<p>🌐 URL: <code>${url}</code></p>`);
 
-      // Header Status
-      output.innerHTML += `<p>🔌 ഹെഡർ പരിശോധിക്കുന്നു...</p>`;
-      try {
-        const headRes = await fetch(url, { method: 'HEAD' });
-        output.innerHTML += `<p>Header: <span class="safe">✅ ${headRes.status} ${headRes.statusText}</span></p>`;
-      } catch (e) {
-        output.innerHTML += `<p class="danger">❌ ഹെഡർ ലഭിച്ചില്ല: ${e.message}</p>`;
-      }
+  try {
+    await Promise.allSettled([
+      checkSSL(domain, report),
+      checkWHOIS(domain, report),
+      checkHeaders(url, report),
+      checkPhishTank(url, report),
+      checkSpamhaus(domain, report),
+      unshorten(url, report),
+      aiHeuristic(url, report),
+      showScreenshot(url, report)  // Added thum.io screenshot preview
+    ]);
+  } catch (e) {
+    appendLine(report, `<p class="warn">⚠️ ചില പരിശോധനകൾ പരാജയപ്പെട്ടു: ${e.message}</p>`);
+  }
 
-      // Screenshot Preview
-      output.innerHTML += `<p>📷 സൈറ്റിന്റെ രൂപം:</p><img src="https://image.thum.io/get/width/600/crop/600/${url}" alt="preview" />`;
+  finalVerdict(url, report);
+  loader.hidden = true;
+}
 
-      // AI Analysis (Offline Heuristic)
-      output.innerHTML += `<p>🧠 AI വിശകലനം:</p><pre id="aiResult">വിശകലനം നടക്കുന്നു...</pre>`;
-      setTimeout(() => {
-        const hints = [];
-        if (url.includes("bit.ly") || url.includes("tinyurl")) hints.push("⚠️ Shortened URL (ചുരുക്കിയ ലിങ്ക്)");
-        if (url.includes("login") || url.includes("signin")) hints.push("⚠️ Login keyword – ഫിഷിംഗ് ആകാമ്");
-        if (url.endsWith(".exe") || url.endsWith(".apk")) hints.push("🚫 ദോഷകരമായ ഫയൽ ഫോർമാറ്റ്");
-        if (hints.length === 0) hints.push("✅ നിയന്ത്രിതമായ അടയാളങ്ങൾ ഇല്ല.");
-        document.getElementById("aiResult").innerText = hints.join("\n");
-      }, 600);
+// -------------------- Helper Functions -------------------- //
 
-      // PhishTank Check
-      output.innerHTML += `<p>🎣 ഫിഷിംഗ് പരിശോധിക്കുന്നു...</p>`;
-      try {
-        const res = await fetch(`https://checkurl.phishtank.com/checkurl/?url=${encodeURIComponent(url)}&format=json`);
-        const data = await res.json();
-        const isPhishing = data.results.valid && data.results.in_database;
-        output.innerHTML += `<p>PhishTank: ${isPhishing ? '<span class="danger">ഫിഷിംഗ് സാധ്യത</span>' : '<span class="safe">സുരക്ഷിതം</span>'}</p>`;
-      } catch {
-        output.innerHTML += `<p class="warn">⚠️ ഫിഷ് ഡാറ്റ ലഭിച്ചില്ല.</p>`;
-      }
+function isValidURL(u) {
+  try {
+    const parsed = new URL(u);
+    return parsed.protocol === "https:" || parsed.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
 
-      // Spamhaus DBL Check
-      output.innerHTML += `<p>🚫 Spamhaus DBL പരിശോധിക്കുന്നു...</p>`;
-      try {
-        const spamRes = await fetch(`https://dns.google/resolve?name=${domain}.dbl.spamhaus.org&type=A`);
-        const spamData = await spamRes.json();
-        const listed = spamData.Answer !== undefined;
-        output.innerHTML += `<p>Spamhaus: ${listed ? '<span class="danger">ബ്ലാക്ക്‌ലിസ്റ്റിൽ ഉണ്ട്</span>' : '<span class="safe">ബ്ലാക്ക്‌ലിസ്റ്റിൽ ഇല്ല</span>'}</p>`;
-      } catch {
-        output.innerHTML += `<p class="warn">⚠️ Spamhaus കണക്ഷൻ പരാജയം.</p>`;
-      }
+async function checkSSL(domain, report) {
+  appendLine(report, `<p>🔒 SSL പരിശോധന...</p>`);
+  try {
+    await fetch(`https://${domain}`, { method: "HEAD", mode: "no-cors" });
+    appendLine(report, `<p>SSL: <span class="safe">ഉണ്ട്</span></p>`);
+  } catch {
+    appendLine(report, `<p>SSL: <span class="danger">ഇല്ല അല്ലെങ്കിൽ പ്രതികരിക്കുന്നില്ല</span></p>`);
+  }
+}
 
-      // Unshortener
-      output.innerHTML += `<p>🔗 ലിങ്ക് Unshort ചെയ്യുന്നു...</p>`;
-      try {
-        const res = await fetch(url, { method: "GET", redirect: "follow" });
-        output.innerHTML += `<p>അവസാന URL: <code>${res.url}</code></p>`;
-      } catch {
-        output.innerHTML += `<p class="warn">⚠️ URL Unshort ചെയ്യാനായില്ല.</p>`;
-      }
+async function checkWHOIS(domain, report) {
+  appendLine(report, `<p>🌍 WHOIS പരിശോധിക്കുന്നു...</p>`);
+  try {
+    const res = await fetch(`https://api.whois.vu/?q=${domain}`);
+    const text = await res.text();
+    const found = text.includes("Domain Name");
+    appendLine(report, `<p>WHOIS: ${found ? '<span class="safe">കണ്ടെത്തി</span>' : '<span class="warn">കണ്ടെത്തിയില്ല</span>'}</p>`);
+  } catch {
+    appendLine(report, `<p class="warn">⚠️ WHOIS API ലഭിച്ചില്ല.</p>`);
+  }
+}
 
-      // Final Verdict
-      const score = [
-        !url.startsWith("https"),
-        url.includes("bit.ly"),
-        url.includes("login"),
-        url.endsWith(".exe") || url.endsWith(".apk")
-      ].filter(Boolean).length;
+async function checkHeaders(url, report) {
+  appendLine(report, `<p>🔌 Header പരിശോധിക്കുന്നു...</p>`);
+  try {
+    const res = await fetch(url, { method: "HEAD" });
+    appendLine(report, `<p>Header: <span class="safe">${res.status} ${res.statusText}</span></p>`);
+  } catch (e) {
+    appendLine(report, `<p class="warn">⚠️ Header ലഭിച്ചില്ല: ${e.message}</p>`);
+  }
+}
 
-      if (score >= 2) {
-        output.innerHTML += `<p class="danger">🔴 അപകടകരം – ഈ ലിങ്ക് തുറക്കരുത്!</p>`;
-      } else if (score === 1) {
-        output.innerHTML += `<p class="warn">🟡 കുറച്ച് സംശയം ഉണ്ട് – ജാഗ്രത ആവശ്യമാണ്.</p>`;
-      } else {
-        output.innerHTML += `<p class="safe">🟢 ലിങ്ക് സുരക്ഷിതം പോലെ തോന്നുന്നു.</p>`;
-      }
-    }
-  </script>
+async function checkPhishTank(url, report) {
+  appendLine(report, `<p>🎣 ഫിഷിംഗ് പരിശോധിക്കുന്നു...</p>`);
+  try {
+    const res = await fetch(`https://checkurl.phishtank.com/checkurl/?url=${encodeURIComponent(url)}&format=json`);
+    const data = await res.json();
+    const phish = data.results?.in_database && data.results?.valid;
+    appendLine(report, `PhishTank: ${phish ? '<span class="danger">⚠️ ഫിഷിംഗ് സാധ്യത</span>' : '<span class="safe">സുരക്ഷിതം</span>'}`);
+  } catch {
+    appendLine(report, `<p class="warn">⚠️ ഫിഷിംഗ് ഡാറ്റ ലഭിച്ചില്ല.</p>`);
+  }
+}
+
+async function checkSpamhaus(domain, report) {
+  appendLine(report, `<p>🚫 Spamhaus DBL പരിശോധിക്കുന്നു...</p>`);
+  try {
+    const res = await fetch(`https://dns.google/resolve?name=${domain}.dbl.spamhaus.org&type=A`);
+    const data = await res.json();
+    appendLine(report, `Spamhaus: ${data.Answer ? '<span class="danger">ബ്ലാക്ക്‌ലിസ്റ്റിൽ ഉണ്ട്</span>' : '<span class="safe">ബ്ലാക്ക്‌ലിസ്റ്റിൽ ഇല്ല</span>'}`);
+  } catch {
+    appendLine(report, `<p class="warn">⚠️ Spamhaus കണക്ഷൻ പരാജയം.</p>`);
+  }
+}
+
+async function unshorten(url, report) {
+  appendLine(report, `<p>🔗 ലിങ്ക് Unshort ചെയ്യുന്നു...</p>`);
+  try {
+    const res = await fetch(url, { redirect: "follow" });
+    appendLine(report, `<p>അവസാന URL: <code>${res.url}</code></p>`);
+  } catch {
+    appendLine(report, `<p class="warn">⚠️ Unshort ചെയ്യാനായില്ല.</p>`);
+  }
+}
+
+function aiHeuristic(url, report) {
+  appendLine(report, `<p>🧠 AI heuristic പരിശോധിക്കുന്നു...</p>`);
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const hints = [];
+      if (/bit\.ly|tinyurl/.test(url)) hints.push("⚠️ ചുരുക്കിയ ലിങ്ക്");
+      if (/login|signin/.test(url)) hints.push("⚠️ 'Login' പദം – ഫിഷിംഗ് സാധ്യത");
+      if (/\.(exe|apk)$/.test(url)) hints.push("🚫 അപകടകരമായ ഫയൽ ഫോർമാറ്റ്");
+      if (!hints.length) hints.push("✅ നിയന്ത്രിതമായ അടയാളങ്ങൾ ഇല്ല.");
+      appendLine(report, `<pre>${hints.join("\n")}</pre>`);
+      resolve();
+    }, 400);
+  });
+}
+
+function finalVerdict(url, report) {
+  const score = [
+    !url.startsWith("https"),
+    /bit\.ly/.test(url),
+    /login/.test(url),
+    /\.(exe|apk)$/.test(url)
+  ].filter(Boolean).length;
+
+  if (score >= 2)
+    appendLine(report, `<p class="danger">🔴 അപകടകരം – ഈ ലിങ്ക് തുറക്കരുത്!</p>`);
+  else if (score === 1)
+    appendLine(report, `<p class="warn">🟡 സംശയകരം – ജാഗ്രത ആവശ്യമാണ്.</p>`);
+  else
+    appendLine(report, `<p class="safe">🟢 സുരക്ഷിതമായി തോന്നുന്നു.</p>`);
+}
+
+function appendLine(el, html) {
+  el.innerHTML += html;
+}
+
+function showError(msg, cls, report, loader) {
+  report.innerHTML = `<p class="${cls}">${msg}</p>`;
+  loader.hidden = true;
+}
+
+// New function to add thum.io screenshot preview
+async function showScreenshot(url, report) {
+  appendLine(report, `<p>🖼️ സൈറ്റിന്റെ സ്ക്രീൻഷോട്ട് കാണിക്കുന്നു...</p>`);
+  const encodedUrl = encodeURIComponent(url);
+  const imgSrc = `https://image.thum.io/get/width/600/crop/600/${url}`;
+  appendLine(report, `<a href="${imgSrc}"> <button> view websites sample look </button></a>`);
+}
+
+</script>
 </body>
 </html>
