@@ -17,11 +17,11 @@
   },
   {
     "question": "പാസ്വേഡ് മാനേജർ സുരക്ഷിതമാണോ?",
-    "answer": "അതെ, പക്ഷേ विश्वासിച്ച പാസ്വേഡ് മാനേജർ മാത്രം ഉപയോഗിക്കണം. Bitwarden, 1Password, KeePass തുടങ്ങിയവ നല്ലതാണ്."
+    "answer": "അതെ, പക്ഷേ വിശ്വാസമുള്ള പാസ്വേഡ് മാനേജർ മാത്രം ഉപയോഗിക്കണം. Bitwarden, 1Password, KeePass തുടങ്ങിയവ നല്ലതാണ്."
   },
   {
     "question": "ഫോണിൽ screen overlay എങ്ങനെ അപകടകരമാണ്?",
-    "answer": "Malicious apps permission pyshing ചെയ്യാൻ screen overlay ഉപയോഗിക്കുന്നു. Settings → Apps → Special Access → Overlay permissions പരിശോധിക്കുക."
+    "answer": "Malicious apps permission phishing ചെയ്യാൻ screen overlay ഉപയോഗിക്കുന്നു. Settings → Apps → Special Access → Overlay permissions പരിശോധിക്കുക."
   },
   {
     "question": "മൊബൈൽ ഹാക്ക് ആകുമ്പോൾ ഒന്നാമത്തെ ചെയ്യേണ്ടത്?",
