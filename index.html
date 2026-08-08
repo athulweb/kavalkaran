@@ -2,17 +2,17 @@
 <html lang="ml">
 <head>
   <meta charset="UTF-8" />
-   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
- <meta name="author" content="Athul vinod"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="author" content="Athul vinod"/>
   <title>Kavalkaran | cyber security | malayalam website </title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="shortcut icon" href="icon/favicon.ico" type="image/x-icon">
-  <link rel="manifest" href="manifest.json">
- <meta name="description" content="Kavalkaran cyber security malayalam website">
-<meta name="keywords" content="athulweb kavalkaran, alpam cyber sharanam kavalkaran, kavalkaran - alpam cyber sharanam">
-<meta property="og:title" content="Kavalkaran | cyber security | malayalam website">
-<meta property="og:description" content="Kavalkaran alpam cyber sharanam">
-<meta name="robots" content="index">  
+  <link rel="manifest" href="./manifest.json">
+  <meta name="description" content="Kavalkaran cyber security malayalam website">
+  <meta name="keywords" content="athulweb kavalkaran, alpam cyber sharanam kavalkaran, kavalkaran - alpam cyber sharanam">
+  <meta property="og:title" content="Kavalkaran | cyber security | malayalam website">
+  <meta property="og:description" content="Kavalkaran alpam cyber sharanam">
+  <meta name="robots" content="index">  
 
   <style>
     body {
@@ -44,135 +44,137 @@
     }
 
     .round-icon {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #10b981;
-  margin-bottom: 1rem;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
-}
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #10b981;
+      margin-bottom: 1rem;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+    }
 
+    #add-home {
+      display: inline-block; /* Kept inline-block per your styling choice */
+      padding: 1em 2em;
+      font-size: 1.1em;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      color: white;
+      background: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet);
+      background-size: 1400% 1400%;
+      animation: rainbowMove 8s linear infinite, pulse 2s ease-in-out infinite;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      margin: 20px auto;
+    }
+
+    #add-home:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+    }
+
+    footer {
+      color: black;
+      text-align: center;
+      margin-top: 30px;
+      font-weight: 500;
+    }
+
+    @keyframes rainbowMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
   </style>
 </head>
 <body>
+
   <div class="welcome-box">
-<img src="images/logo.png" alt="കാവൽക്കാരൻ ലോഗോ" class="round-icon" />
+    <img src="images/logo.png" alt="കാവൽക്കാരൻ ലോഗോ" class="round-icon" />
     <h1>കാവൽക്കാരൻ</h1>
     <p style="color: black;">അല്പം സൈബർ ശരണം.....</p>
-     <p style="color: black;">Alpam cyber sharanam...</p>
-  
-     <br/>
+    <p style="color: black;">Alpam cyber sharanam...</p>
+    <br/>
     <button onclick="startApp()" style="padding: 1rem 2rem; font-size: 1.2rem;">ആരംഭിക്കുക</button>
   </div>
 
   <noscript>
-    This application made up of java script, but we are focused on privacy as the important
-    thing hence we are not using a database or server our own, or no cookies  you can view 
-    page  source for conformation but cloning this website is fully illegal and have fine 
-    more than 1 crore according to indian it act 2000. if you are in another countries so that 
-    will also problem under there it acts or cyber security laws
+    This application made up of JavaScript, but we are focused on privacy as the important
+    thing hence we are not using a database or server our own, or no cookies you can view 
+    page source for confirmation but cloning this website is fully illegal and have fine 
+    more than 1 crore according to Indian IT Act 2000. If you are in another country so that 
+    will also be a problem under their IT Acts or cyber security laws.
   </noscript>
 
+  <!-- Cleaned single PWA install button section -->
+  <div style="text-align: center;">
+    <button id="add-home">
+      🚀 Install App
+    </button>
+  </div>
 
-<center>
-<div id="pwa-install-container">
-  <button id="add-to-home-button" style="display: none;">
-    🚀 Install App
-  </button>
-</div>
-</center>
+  <footer>Created By Athul vinod .M</footer>
 
-  <footer style="color: black;"> Created By Athul vinod .M</footer>
+  <!-- Centralized Javascript Block -->
   <script>
     function startApp() {
       window.location.href = "dashboard.html";
     }
+
+    // 1. Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then((reg) => {
+            console.log('Service Worker successfully registered!', reg.scope);
+          })
+          .catch((err) => {
+            console.error('Service Worker registration failed:', err);
+          });
+      });
+    }
+
+    // 2. PWA Installation Event Prompt Handler
+    let deferredPrompt;
+    const installBtn = document.getElementById('add-home');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'inline-block';
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to install: ${outcome}`);
+        deferredPrompt = null;
+        installBtn.style.display = 'none';
+      }
+    });
+
+    window.addEventListener('appinstalled', () => {
+      console.log('PWA was successfully installed.');
+      installBtn.style.display = 'none';
+    });
   </script>
 
-<center>
-<div id="pwa-install-container">
-  <button id="add-home" >
-    🚀 Install App
-  </button>
-</div>
-</center>
-<style>
-  #add-to-home-button {
-    padding: 1em 2em;
-    font-size: 1.1em;
-    font-weight: bold;
-    border: none;
-    border-radius: 12px;
-    color: white;
-    background: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet);
-    background-size: 1400% 1400%;
-    animation: rainbowMove 8s linear infinite, pulse 2s ease-in-out infinite;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
-    cursor: pointer;
-    transition: transform 0.3s ease;
-  }
-
-  #add-to-home-button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
-  }
-
-  @keyframes rainbowMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-
-  @keyframes pulse {
-    0%, 100% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.05);
-    }
-  }
-</style>
-
-<script>
-  let deferredPrompt;
-
-  // Listen for the beforeinstallprompt event
-  window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent the automatic prompt
-    e.preventDefault();
-    // Save the event so it can be triggered later
-    deferredPrompt = e;
-
-    // Show the button
-    document.getElementById('add-home').style.display = 'block';
-  });
-
-  // Handle the button click
-  document.getElementById('add-home').addEventListener('click', async () => {
-    if (deferredPrompt) {
-      // Show the install prompt
-      deferredPrompt.prompt();
-
-      // Wait for user response
-      const { outcome } = await deferredPrompt.userChoice;
-
-      console.log(`User response: ${outcome}`);
-
-      // Clear the saved event
-      deferredPrompt = null;
-    }
-  });
-</script>
   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-NTQMM89B9F"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-NTQMM89B9F');
-</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NTQMM89B9F"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NTQMM89B9F');
+  </script>
 </body>
 </html>
 
